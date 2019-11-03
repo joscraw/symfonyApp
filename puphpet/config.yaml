@@ -20,10 +20,10 @@ vagrantfile:
                         update_guest_tools: 0
                 machines:
                     machine1:
-                        id: bingo
-                        hostname: pintex.puphpet
+                        id: p3
+                        hostname: p3.puphpet
                         network:
-                            private_network: 192.168.56.109
+                            private_network: 192.168.56.110
                             forwarded_port:
                                 port1:
                                     host: '8659'
@@ -185,9 +185,9 @@ apache:
         - rewrite
     vhosts:
         vhost1:
-            servername: pintex.test
+            servername: p3.test
             serveraliases:
-                - www.pintex.test
+                - www.p3.test
             docroot: /var/www/public
             port: '80'
             setenvif:
@@ -340,20 +340,20 @@ mysql:
     install: '1'
     settings:
         version: '5.7'
-        root_password: pintex
+        root_password: p3
         override_options: {  }
     users:
         user1:
-            name: pintex
-            password: pintex
+            name: p3
+            password: p3
     databases:
         database1:
-            name: pintex
+            name: p3
             collate: utf8_general_ci
             sql: ''
     grants:
         grant1:
-            user: pintex
+            user: p3
             table: '*.*'
             privileges:
                 - ALL

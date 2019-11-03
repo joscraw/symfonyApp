@@ -1,0 +1,8 @@
+App\Entity\AdminUser:
+  admin_user_1:
+    password: <{app.alice.parameters.password}>
+    roles: [ "ROLE_ADMIN_USER", "ROLE_USER"]
+    firstName: "Josh"
+    lastName: "Crawmer"
+    email: "josh+admin@p3.com"
+    activated: true

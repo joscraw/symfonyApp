@@ -6,76 +6,98 @@ use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Timestampable\Traits\Timestampable;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Rollerworks\Component\PasswordStrength\Validator\Constraints as RollerworksPassword;
 
+use Gedmo\Mapping\Annotation as Gedmo;
+
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @UniqueEntity(fields={"email"}, message="There is already an account with this email")
+ *
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({"adminUser" = "AdminUser", "user" = "User"})
  */
 class User implements UserInterface
 {
+    const ROLE_USER = 'ROLE_USER';
+    const ROLE_ADMIN_USER = 'ROLE_ADMIN_USER';
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
-    private $id;
+    protected $id;
 
     /**
      * @Assert\NotBlank(message="Don't forget an email for your user!", groups={"CREATE", "EDIT"})
      * @ORM\Column(type="string", length=180, unique=true)
      */
-    private $email;
+    protected $email;
 
     /**
-     * @Assert\NotBlank(message="Don't forget a username for your user!", groups={"CREATE", "EDIT"})
-     * @ORM\Column(type="string", length=180, unique=true)
-     */
-    private $username;
-
-    /**
-     * @RollerworksPassword\PasswordRequirements(requireLetters=true, requireNumbers=true, requireCaseDiff=true, requireSpecialCharacter= true, minLength = "6", groups={"CREATE", "EDIT"})
-     * @Assert\NotBlank(message="Don't forget a password for your user!", groups={"CREATE"})
-     *
      * @var string The hashed password
      * @ORM\Column(type="string")
      */
-    private $password;
+    protected $password;
 
     /**
-     * @Assert\NotBlank(message="Don't forget the password repeat field!", groups={"CREATE"})
-     * @var string password repeat
+     * @Assert\NotBlank(message="Don't forget a password for your user!", groups={"CREATE"})
      */
-    private $passwordRepeat;
+    protected $plainPassword;
 
     /**
      * @Assert\NotBlank(message="Don't forget a first name for your user!", groups={"CREATE", "EDIT"})
      *
      * @ORM\Column(type="string", length=24)
      */
-    private $firstName;
+    protected $firstName;
 
     /**
      * @Assert\NotBlank(message="Don't forget a last name for your user!", groups={"CREATE", "EDIT"})
      *
      * @ORM\Column(type="string", length=24)
      */
-    private $lastName;
+    protected $lastName;
 
     /**
      * @ORM\Column(type="string", length=64, nullable=true)
      */
-    private $passwordResetToken;
+    protected $passwordResetToken;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
-    private $passwordResetTokenTimestamp;
+    protected $passwordResetTokenTimestamp;
+
+    /**
+     * @ORM\Column(type="json")
+     */
+    protected $roles = [];
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    protected $activated;
+
+    /**
+     * @Gedmo\Timestampable(on="create")
+     * @ORM\Column(name="created", type="datetime")
+     */
+    private $created;
+
+    /**
+     * @ORM\Column(name="updated", type="datetime")
+     * @Gedmo\Timestampable(on="update")
+     */
+    private $updated;
 
 
     public function getId(): ?int
@@ -100,18 +122,7 @@ class User implements UserInterface
      */
     public function getUsername()
     {
-        return $this->username;
-    }
-
-    /**
-     * @param mixed $username
-     * @return User
-     */
-    public function setUsername($username)
-    {
-        $this->username = $username;
-
-        return $this;
+        return $this->email;
     }
 
     /**
@@ -171,19 +182,19 @@ class User implements UserInterface
     }
 
     /**
-     * @return string
+     * @return mixed
      */
-    public function getPasswordRepeat(): ?string
+    public function getPlainPassword()
     {
-        return $this->passwordRepeat;
+        return $this->plainPassword;
     }
 
     /**
-     * @param string $passwordRepeat
+     * @param mixed $plainPassword
      */
-    public function setPasswordRepeat(?string $passwordRepeat): void
+    public function setPlainPassword($plainPassword): void
     {
-        $this->passwordRepeat = $passwordRepeat;
+        $this->plainPassword = $plainPassword;
     }
 
     public function getPasswordResetToken(): ?string
@@ -248,21 +259,65 @@ class User implements UserInterface
     }
 
     /**
-     * Returns the roles granted to the user.
-     *
-     *     public function getRoles()
-     *     {
-     *         return ['ROLE_USER'];
-     *     }
-     *
-     * Alternatively, the roles might be stored on a ``roles`` property,
-     * and populated in any number of different ways when the user object
-     * is created.
-     *
-     * @return (Role|string)[] The user roles
+     * @return array
      */
     public function getRoles()
     {
-        return array('ROLE_USER');
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    public function getActivated(): ?bool
+    {
+        return $this->activated;
+    }
+
+    public function setActivated(bool $activated): self
+    {
+        $this->activated = $activated;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCreated()
+    {
+        return $this->created;
+    }
+
+    /**
+     * @param mixed $created
+     */
+    public function setCreated($created): void
+    {
+        $this->created = $created;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUpdated()
+    {
+        return $this->updated;
+    }
+
+    /**
+     * @param mixed $updated
+     */
+    public function setUpdated($updated): void
+    {
+        $this->updated = $updated;
     }
 }
