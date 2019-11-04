@@ -30,8 +30,8 @@ yarn dev
 
 add the following to your /etc/hosts file
 
-192.168.56.109 p3.test
-192.168.56.109 www.p3.test
+192.168.56.110 p3.test
+192.168.56.110 www.p3.test
 
 That's it!
 
