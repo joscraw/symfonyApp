@@ -1,3 +1,5 @@
+# PROJECT SETUP
+
 If on a MAC 
 
 Download and install Vagrant https://www.vagrantup.com/downloads.html
@@ -20,7 +22,7 @@ composer install
 
 yarn install
 
-./node_modules/.bin/encore dev
+yarn dev
 
 ./bin/console doctrine:schema:update --force
 
@@ -35,10 +37,20 @@ That's it!
 
 Visit www.p3.test or p3.test in your browser
 
-to compile your assets 
-
-vagrant ssh and cd into /var/www and run ./node_modules/.bin/encore dev
 
 
+# TIPS:
 
-Make sure to setup a random string on Asset URLs so we can bust cache on prod server
+
+### COMPILE ASSETS
+
+
+vagrant ssh and cd into /var/www and run yarn dev
+
+OR:
+
+vagrant ssh and cd into /var/www and run yarn watch
+
+### Markdown cheat-sheet 
+
+https://github.com/tchapi/markdown-cheatsheet/blob/master/README.md

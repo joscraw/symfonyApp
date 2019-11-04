@@ -24,6 +24,7 @@ Encore
      * and one CSS file (e.g. app.css) if you JavaScript imports CSS.
      */
     .addEntry('app', './assets/js/app.js')
+    .addEntry('login', './assets/js/login.js')
     //.addEntry('page1', './assets/js/page1.js')
     //.addEntry('page2', './assets/js/page2.js')
 
@@ -32,7 +33,11 @@ Encore
 
     // will require an extra script tag for runtime.js
     // but, you probably want this, unless you're building a single-page app
-    .enableSingleRuntimeChunk()
+    //.enableSingleRuntimeChunk()
+    .disableSingleRuntimeChunk()
+
+    // If you need to add CSS to your project without importing it through JS first
+    //.addStyleEntry('account', './assets/css/account.scss')
 
     /*
      * FEATURE CONFIG
@@ -73,6 +78,8 @@ Encore
 
     // uncomment if you're having problems with a jQuery plugin
     .autoProvidejQuery()
+
+    //.createSharedEntry('app', './assets/js/app.js')
 
     // uncomment if you use API Platform Admin (composer req api-admin)
     //.enableReactPreset()

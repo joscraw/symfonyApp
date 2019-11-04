@@ -70,5 +70,4 @@ class WelcomeController extends AbstractController
             'registrationForm' => $form->createView(),
         ]);
     }
-
 }
