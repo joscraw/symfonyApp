@@ -33,8 +33,8 @@ Encore
 
     // will require an extra script tag for runtime.js
     // but, you probably want this, unless you're building a single-page app
-    //.enableSingleRuntimeChunk()
-    .disableSingleRuntimeChunk()
+    .enableSingleRuntimeChunk()
+    //.disableSingleRuntimeChunk()
 
     // If you need to add CSS to your project without importing it through JS first
     //.addStyleEntry('account', './assets/css/account.scss')
