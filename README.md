@@ -30,12 +30,12 @@ clone this repo
 
 add the following to your /etc/hosts file
 
-192.168.56.110 p3.test
-192.168.56.110 www.p3.test
+192.168.56.111 ppn.test
+192.168.56.111 www.ppn.test
 
 That's it!
 
-Visit www.p3.test or p3.test in your browser
+Visit www.ppn.test or ppn.test in your browser
 
 
 

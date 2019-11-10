@@ -20,10 +20,10 @@ vagrantfile:
                         update_guest_tools: 0
                 machines:
                     machine1:
-                        id: p3
-                        hostname: p3.puphpet
+                        id: ppn
+                        hostname: ppn.puphpet
                         network:
-                            private_network: 192.168.56.110
+                            private_network: 192.168.56.111
                             forwarded_port:
                                 port1:
                                     host: '8659'
@@ -185,9 +185,9 @@ apache:
         - rewrite
     vhosts:
         vhost1:
-            servername: p3.test
+            servername: ppn.test
             serveraliases:
-                - www.p3.test
+                - www.ppn.test
             docroot: /var/www/public
             port: '80'
             setenvif:
@@ -340,20 +340,20 @@ mysql:
     install: '1'
     settings:
         version: '5.7'
-        root_password: p3
+        root_password: ppn
         override_options: {  }
     users:
         user1:
-            name: p3
-            password: p3
+            name: ppn
+            password: ppn
     databases:
         database1:
-            name: p3
+            name: ppn
             collate: utf8_general_ci
             sql: ''
     grants:
         grant1:
-            user: p3
+            user: ppn
             table: '*.*'
             privileges:
                 - ALL
