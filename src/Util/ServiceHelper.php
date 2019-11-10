@@ -2,6 +2,7 @@
 
 namespace App\Util;
 
+use App\Mailer\ResetPasswordMailer;
 use App\Repository\UserRepository;
 use App\Security\LoginFormAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -72,6 +73,11 @@ trait ServiceHelper
     private $passwordEncoder;
 
     /**
+     * @var ResetPasswordMailer
+     */
+    private $resetPasswordMailer;
+
+    /**
      * ServiceHelper constructor.
      * @param EntityManagerInterface $entityManager
      * @param Packages $assetsManager
@@ -82,6 +88,9 @@ trait ServiceHelper
      * @param LoginFormAuthenticator $authenticator
      * @param Environment $twig
      * @param TokenStorageInterface $securityToken
+     * @param SerializerInterface $serializer
+     * @param UserPasswordEncoderInterface $passwordEncoder
+     * @param ResetPasswordMailer $resetPasswordMailer
      */
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -92,7 +101,10 @@ trait ServiceHelper
         GuardAuthenticatorHandler $guardHandler,
         LoginFormAuthenticator $authenticator,
         Environment $twig,
-        TokenStorageInterface $securityToken
+        TokenStorageInterface $securityToken,
+        SerializerInterface $serializer,
+        UserPasswordEncoderInterface $passwordEncoder,
+        ResetPasswordMailer $resetPasswordMailer
     ) {
         $this->entityManager = $entityManager;
         $this->assetsManager = $assetsManager;
@@ -103,6 +115,9 @@ trait ServiceHelper
         $this->authenticator = $authenticator;
         $this->twig = $twig;
         $this->securityToken = $securityToken;
+        $this->serializer = $serializer;
+        $this->passwordEncoder = $passwordEncoder;
+        $this->resetPasswordMailer = $resetPasswordMailer;
     }
 
     /**
@@ -119,5 +134,4 @@ trait ServiceHelper
             $routerContext->getBaseUrl()
         );
     }
-
 }

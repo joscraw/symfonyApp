@@ -100,3 +100,8 @@ https://github.com/tchapi/markdown-cheatsheet/blob/master/README.md
 ### Production deploy tips
 
 https://symfonycasts.com/screencast/webpack-encore/production#play
+
+
+### API Tips
+
+https://symfonycasts.com/screencast/symfony-security/entry-point#play

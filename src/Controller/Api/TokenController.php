@@ -1,0 +1,62 @@
+<?php
+
+namespace App\Controller\Api;
+
+use App\Entity\ApiToken;
+use App\Form\MusicImportType;
+use App\Util\ServiceHelper;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Exception\BadCredentialsException;
+
+/**
+ * Class OrganizationController
+ * @package App\Controller
+ * @Route("/api")
+ */
+class TokenController extends AbstractController
+{
+    use ServiceHelper;
+
+    /**
+     * @Route("/tokens", name="api_tokens", methods={"POST"}, options = { "expose" = true })
+     * @param Request $request
+     * @return JsonResponse
+     * @throws \Exception
+     */
+    public function newTokenAction(Request $request) {
+
+        $data = json_decode($request->getContent(), true);
+        $username = $data['username'];
+        $password = $data['password'];
+
+        $user = $this->userRepository->findOneBy([
+            'email' => $username
+        ]);
+
+        if (!$user) {
+            throw $this->createNotFoundException();
+        }
+
+        $isValid = $this->passwordEncoder->isPasswordValid($user, $password);
+
+        if (!$isValid) {
+            throw new BadCredentialsException();
+        }
+
+        $apiToken = new ApiToken($user);
+        $this->entityManager->persist($apiToken);
+        $this->entityManager->flush();
+
+        return new JsonResponse([
+            'token' => $apiToken->getToken(),
+            'expires_at' => $apiToken->getExpiresAt(),
+            'success' => true,
+            ]
+        );
+    }
+}

@@ -4,5 +4,5 @@ App\Entity\AdminUser:
     roles: [ "ROLE_ADMIN_USER", "ROLE_USER"]
     firstName: "Josh"
     lastName: "Crawmer"
-    email: "josh+admin@p3.com"
+    email: "josh+admin@ppn.com"
     activated: true

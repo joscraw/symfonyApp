@@ -9,6 +9,7 @@ use App\Mailer\ResetPasswordMailer;
 use App\Model\ForgotPassword;
 use App\Model\ResetPassword;
 use App\Repository\UserRepository;
+use App\Util\ServiceHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
@@ -25,44 +26,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
  */
 class SecurityController extends AbstractController
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    /**
-     * @var UserRepository
-     */
-    private $userRepository;
-
-    /**
-     * @var UserPasswordEncoderInterface
-     */
-    private $passwordEncoder;
-
-    /**
-     * @var ResetPasswordMailer
-     */
-    private $resetPasswordMailer;
-
-    /**
-     * SecurityController constructor.
-     * @param EntityManagerInterface $entityManager
-     * @param UserRepository $userRepository
-     * @param UserPasswordEncoderInterface $passwordEncoder
-     * @param ResetPasswordMailer $resetPasswordMailer
-     */
-    public function __construct(
-        EntityManagerInterface $entityManager,
-        UserRepository $userRepository,
-        UserPasswordEncoderInterface $passwordEncoder,
-        ResetPasswordMailer $resetPasswordMailer
-    ) {
-        $this->entityManager = $entityManager;
-        $this->userRepository = $userRepository;
-        $this->passwordEncoder = $passwordEncoder;
-        $this->resetPasswordMailer = $resetPasswordMailer;
-    }
+    use ServiceHelper;
 
     /**
      * @Route("/login", name="app_login")
