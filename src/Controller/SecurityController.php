@@ -3,12 +3,17 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Form\EmailCheckType;
 use App\Form\ForgotPasswordType;
+use App\Form\RegistrationFormType;
 use App\Form\ResetPasswordType;
+use App\Http\ApiResponse;
 use App\Mailer\ResetPasswordMailer;
+use App\Model\EmailCheck;
 use App\Model\ForgotPassword;
 use App\Model\ResetPassword;
 use App\Repository\UserRepository;
+use App\Security\LoginFormAuthenticator;
 use App\Util\ServiceHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,9 +21,12 @@ use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\HttpFoundation\AcceptHeader;
 
 /**
  * Class SecurityController
@@ -27,6 +35,139 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 class SecurityController extends AbstractController
 {
     use ServiceHelper;
+
+    /**
+     * @Route("/", name="welcome")
+     * @param Request $request
+     * @param AuthenticationUtils $authenticationUtils
+     * @param UserPasswordEncoderInterface $passwordEncoder
+     * @param GuardAuthenticatorHandler $guardHandler
+     * @param LoginFormAuthenticator $authenticator
+     * @return Response
+     */
+    public function welcome(Request $request, AuthenticationUtils $authenticationUtils, UserPasswordEncoderInterface $passwordEncoder, GuardAuthenticatorHandler $guardHandler, LoginFormAuthenticator $authenticator): Response
+    {
+        // get the login error if there is one
+        $error = $authenticationUtils->getLastAuthenticationError();
+        // last username entered by the user
+        $lastUsername = $authenticationUtils->getLastUsername();
+
+        $user = new User();
+        $form = $this->createForm(RegistrationFormType::class, $user, [
+            'action' => $this->generateUrl('welcome'),
+            'method' => 'POST',
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // encode the plain password
+            $user->setPassword(
+                $passwordEncoder->encodePassword(
+                    $user,
+                    $form->get('password')->getData()
+                )
+            );
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            // do anything else you need here, like send an email
+
+            return $guardHandler->authenticateUserAndHandleSuccess(
+                $user,
+                $request,
+                $authenticator,
+                'main' // firewall name in security.yaml
+            );
+        }
+
+        return $this->render('security/login.html.twig', [
+            'last_username' => $lastUsername, 'error' => $error,
+            'registrationForm' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @Route("/email-check", name="email_check", methods={"GET", "POST"}, options = {"expose" = true })
+     * @param Request $request
+     * @return Response
+     */
+    public function emailCheckAction(Request $request): Response
+    {
+        $emailCheck = new EmailCheck();
+        $form = $this->createForm(EmailCheckType::class, $emailCheck, []);
+
+        $acceptHeader = AcceptHeader::fromString($request->headers->get('Accept'));
+
+        if ($acceptHeader->has('application/json')) {
+            $clearMissing = $request->getMethod() != 'PATCH';
+            $form->submit($request->request->all(), $clearMissing);
+
+            if (!$form->isValid()) {
+                $errors = $this->getErrorsFromForm($form);
+                return new ApiResponse("Error submitting form.", null, $errors, 400);
+            } else {
+
+                /** @var EmailCheck $emailCheck */
+                $emailCheck = $form->getData();
+
+                $user = $this->userRepository->findOneBy([
+                    'email' => $emailCheck->getEmailAddress()
+                ]);
+
+                if(!$user) {
+                    return new ApiResponse("User does not exist in the system", [
+                        'email_exists' => false,
+                        'verified' => false
+                    ]);
+                }
+
+                if($user && !$user->getIsVerified()) {
+                    return new ApiResponse("User exists but is not verified in the system", [
+                        'email_exists' => true,
+                        'verified' => false
+                    ]);
+                }
+            }
+
+            return new ApiResponse("User exists and has been verified", [
+                'email_exists' => true,
+                'verified' => true
+            ]);
+
+
+        } else {
+
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+
+                /** @var EmailCheck $emailCheck */
+                $emailCheck = $form->getData();
+
+                $user = $this->userRepository->findOneBy([
+                    'email' => $emailCheck->getEmailAddress()
+                ]);
+
+                if(!$user) {
+                    $this->addFlash('error', 'That user does not exist in the system.');
+                    return $this->redirectToRoute('email_check');
+                }
+
+                if($user && !$user->getIsVerified()) {
+                    $this->addFlash('error', 'That user is not verified yet in the system.');
+                    return $this->redirectToRoute('email_check');
+                }
+
+                return new Response("successful");
+            }
+
+            return $this->render('security/email_check.html.twig', [
+                'form' => $form->createView(),
+            ]);
+        }
+    }
 
     /**
      * @Route("/login", name="app_login")

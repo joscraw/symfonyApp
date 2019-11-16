@@ -105,3 +105,4 @@ https://symfonycasts.com/screencast/webpack-encore/production#play
 ### API Tips
 
 https://symfonycasts.com/screencast/symfony-security/entry-point#play
+https://symfonycasts.com/screencast/symfony-rest2/validation-errors-response
