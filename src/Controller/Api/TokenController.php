@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 
 /**
  * Class OrganizationController
@@ -23,7 +24,7 @@ class TokenController extends AbstractController
     use ServiceHelper;
 
     /**
-     * @Route("/tokens", name="api_tokens", methods={"POST"}, options = { "expose" = true })
+     * @Route("/tokens", name="new_token", methods={"POST"}, options = { "expose" = true })
      * @param Request $request
      * @return JsonResponse
      * @throws \Exception
@@ -49,6 +50,38 @@ class TokenController extends AbstractController
         }
 
         $apiToken = new ApiToken($user);
+        $this->entityManager->persist($apiToken);
+        $this->entityManager->flush();
+
+        return new JsonResponse([
+            'token' => $apiToken->getToken(),
+            'expires_at' => $apiToken->getExpiresAt(),
+            'success' => true,
+            ]
+        );
+    }
+
+    /**
+     * @Route("/tokens/refresh", name="token_refresh", methods={"POST"}, options = { "expose" = true })
+     * @param Request $request
+     * @return JsonResponse
+     * @throws \Exception
+     */
+    public function tokenRefreshAction(Request $request) {
+
+        $token = $request->request->get('token');
+
+        $token = $this->apiTokenRepo->findOneBy([
+            'token' => $token
+        ]);
+
+        if (!$token) {
+            throw new CustomUserMessageAuthenticationException(
+                'Invalid API Token'
+            );
+        }
+
+        $apiToken = new ApiToken($token->getUser());
         $this->entityManager->persist($apiToken);
         $this->entityManager->flush();
 

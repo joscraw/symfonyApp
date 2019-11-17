@@ -3,6 +3,8 @@
 namespace App\Util;
 
 use App\Mailer\ResetPasswordMailer;
+use App\Mailer\SecurityMailer;
+use App\Repository\ApiTokenRepository;
 use App\Repository\UserRepository;
 use App\Security\LoginFormAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -79,6 +81,16 @@ trait ServiceHelper
     private $resetPasswordMailer;
 
     /**
+     * @var ApiTokenRepository
+     */
+    private $apiTokenRepo;
+
+    /**
+     * @var SecurityMailer
+     */
+    private $securityMailer;
+
+    /**
      * ServiceHelper constructor.
      * @param EntityManagerInterface $entityManager
      * @param Packages $assetsManager
@@ -92,6 +104,8 @@ trait ServiceHelper
      * @param SerializerInterface $serializer
      * @param UserPasswordEncoderInterface $passwordEncoder
      * @param ResetPasswordMailer $resetPasswordMailer
+     * @param ApiTokenRepository $apiTokenRepo
+     * @param SecurityMailer $securityMailer
      */
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -105,7 +119,9 @@ trait ServiceHelper
         TokenStorageInterface $securityToken,
         SerializerInterface $serializer,
         UserPasswordEncoderInterface $passwordEncoder,
-        ResetPasswordMailer $resetPasswordMailer
+        ResetPasswordMailer $resetPasswordMailer,
+        ApiTokenRepository $apiTokenRepo,
+        SecurityMailer $securityMailer
     ) {
         $this->entityManager = $entityManager;
         $this->assetsManager = $assetsManager;
@@ -119,6 +135,8 @@ trait ServiceHelper
         $this->serializer = $serializer;
         $this->passwordEncoder = $passwordEncoder;
         $this->resetPasswordMailer = $resetPasswordMailer;
+        $this->apiTokenRepo = $apiTokenRepo;
+        $this->securityMailer = $securityMailer;
     }
 
     /**

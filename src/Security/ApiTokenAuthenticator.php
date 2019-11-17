@@ -3,6 +3,7 @@
 namespace App\Security;
 
 use App\Repository\ApiTokenRepository;
+use App\Util\ServiceHelper;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -15,11 +16,7 @@ use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 class ApiTokenAuthenticator extends AbstractGuardAuthenticator
 {
 
-    private $apiTokenRepo;
-    public function __construct(ApiTokenRepository $apiTokenRepo)
-    {
-        $this->apiTokenRepo = $apiTokenRepo;
-    }
+    use ServiceHelper;
 
     public function supports(Request $request)
     {

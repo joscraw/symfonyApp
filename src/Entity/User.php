@@ -16,7 +16,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
- * @UniqueEntity(fields={"email"}, message="There is already an account with this email")
+ * @UniqueEntity(fields={"email"}, message="There is already an account with this email", groups={"INITIAL_REGISTRATION"})
  *
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
@@ -28,6 +28,20 @@ class User implements UserInterface
     const ROLE_ADMIN_USER = 'ROLE_ADMIN_USER';
 
     /**
+     * These are roles that the user can select when signing up. Don't actually
+     * affect what the user can see/do on the app
+     *
+     * @var array
+     */
+    public static $roleOptions = [
+        'Doctor' => 'DOCTOR',
+        'Medical Professional' => 'MEDICAL_PROFESSIONAL',
+        'Medical Assistant' => 'MEDICAL_ASSISTANT',
+        'Clinic Admin' => 'CLINIC_ADMIN',
+        'Patient' => 'PATIENT',
+    ];
+
+    /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
@@ -35,31 +49,42 @@ class User implements UserInterface
     protected $id;
 
     /**
-     * @Assert\NotBlank(message="Don't forget an email for your user!", groups={"CREATE", "EDIT"})
+     * @Assert\NotBlank(message="Don't forget an email for your user!", groups={"INITIAL_REGISTRATION"})
      * @ORM\Column(type="string", length=180, unique=true)
      */
     protected $email;
 
     /**
      * @var string The hashed password
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      */
     protected $password;
 
     /**
-     * @Assert\NotBlank(message="Don't forget a password for your user!", groups={"CREATE"})
+     * @Assert\NotBlank(message="Don't forget a password for your user!")
      */
     protected $plainPassword;
 
     /**
-     * @Assert\NotBlank(message="Don't forget a first name for your user!", groups={"CREATE", "EDIT"})
+     * InvitationCode
+     *
+     * The invitation code associated with a user.
+     *
+     * @var string
+     *
+     * @ORM\Column(name="invitation_code", type="string", length=255, nullable=true)
+     */
+    protected $invitationCode;
+
+    /**
+     * @Assert\NotBlank(message="Don't forget a first name for your user!", groups={"INITIAL_REGISTRATION"})
      *
      * @ORM\Column(type="string", length=24)
      */
     protected $firstName;
 
     /**
-     * @Assert\NotBlank(message="Don't forget a last name for your user!", groups={"CREATE", "EDIT"})
+     * @Assert\NotBlank(message="Don't forget a last name for your user!", groups={"INITIAL_REGISTRATION"})
      *
      * @ORM\Column(type="string", length=24)
      */
@@ -103,9 +128,27 @@ class User implements UserInterface
     private $apiTokens;
 
     /**
-     * @ORM\Column(type="boolean")
+     * This is different than the roles property as this doesn't actually affect authentication  or
+     * authorization throughout the app. This value is selected when a user signs up
+     *
+     * @ORM\Column(type="string", length=255)
      */
-    private $isVerified = false;
+    private $role;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    protected $activationCode;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    protected $photo;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    protected $agreedToTermsAt;
 
     public function __construct()
     {
@@ -277,8 +320,8 @@ class User implements UserInterface
     public function getRoles()
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
+     /*   // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';*/
 
         return array_unique($roles);
     }
@@ -365,15 +408,89 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getIsVerified(): ?bool
+    public function getRole(): ?string
     {
-        return $this->isVerified;
+        return $this->role;
     }
 
-    public function setIsVerified(bool $isVerified): self
+    public function setRole(string $role): self
     {
-        $this->isVerified = $isVerified;
+        $this->role = $role;
 
         return $this;
+    }
+
+    public function getAgreedToTermsAt()
+    {
+        return $this->agreedToTermsAt;
+    }
+
+    public function agreeToTerms()
+    {
+        $this->agreedToTermsAt = new \DateTime();
+    }
+
+    public function setAgreedToTermsAt($agreedToTermsAt)
+    {
+        $this->agreedToTermsAt = $agreedToTermsAt;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPhoto()
+    {
+        return $this->photo;
+    }
+
+    /**
+     * @param mixed $photo
+     */
+    public function setPhoto($photo): void
+    {
+        $this->photo = $photo;
+    }
+
+    public function getActivationCode()
+    {
+        return $this->activationCode;
+    }
+
+    public function setActivationCode($activationCode)
+    {
+        $this->activationCode = $activationCode;
+
+        return $this;
+    }
+
+    public function initializeNewUser($activationCode = true, $invitationCode = false)
+    {
+        if($activationCode) {
+            $activationCode = bin2hex(random_bytes(32));
+            $this->setActivationCode($activationCode);
+        }
+
+        if($invitationCode) {
+            $invitationCode = bin2hex(random_bytes(32));
+            $this->setInvitationCode($invitationCode);
+        }
+
+        $this->roles[] = self::ROLE_USER;
+    }
+
+    /**
+     * @return string
+     */
+    public function getInvitationCode()
+    {
+        return $this->invitationCode;
+    }
+
+    /**
+     * @param string $invitationCode
+     */
+    public function setInvitationCode($invitationCode)
+    {
+        $this->invitationCode = $invitationCode;
     }
 }

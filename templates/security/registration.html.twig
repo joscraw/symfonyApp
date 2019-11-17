@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Log in!{% endblock %}
+
+{% block body %}
+
+{{ form_start(form, {'attr': {novalidate: 'novalidate', class: 'js-forgot-password-form'}}) }}
+
+{{ form_errors(form) }}
+
+{{ form_errors(form.firstName) }}
+{{ form_widget(form.firstName, {'attr': {autofocus: 'autofocus', placeholder: 'First Name'}}) }}
+    <br>
+
+{{ form_errors(form.lastName) }}
+{{ form_widget(form.lastName, {'attr': {autofocus: 'autofocus', placeholder: 'Last Name'}}) }}
+    <br>
+
+{{ form_errors(form.email) }}
+{{ form_widget(form.email, {'attr': {autofocus: 'autofocus', placeholder: 'Email'}}) }}
+    <br>
+
+{{ form_errors(form.role) }}
+{{ form_widget(form.role, {'attr': {autofocus: 'autofocus', placeholder: 'Role'}}) }}
+    <br>
+
+<input type="submit" value="Sign Up"/>
+
+{{ form_rest(form) }}
+{{ form_end(form) }}
+
+{% endblock %}
