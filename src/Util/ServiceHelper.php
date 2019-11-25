@@ -7,7 +7,10 @@ use App\Mailer\SecurityMailer;
 use App\Repository\ApiTokenRepository;
 use App\Repository\UserRepository;
 use App\Security\LoginFormAuthenticator;
+use App\Service\ImageCacheGenerator;
+use App\Service\UploaderHelper;
 use Doctrine\ORM\EntityManagerInterface;
+use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Symfony\Component\Asset\Packages;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -91,6 +94,21 @@ trait ServiceHelper
     private $securityMailer;
 
     /**
+     * @var UploaderHelper
+     */
+    private $uploaderHelper;
+
+    /**
+     * @var ImageCacheGenerator
+     */
+    private $imageCacheGenerator;
+
+    /**
+     * @var CacheManager
+     */
+    private $cacheManager;
+
+    /**
      * ServiceHelper constructor.
      * @param EntityManagerInterface $entityManager
      * @param Packages $assetsManager
@@ -106,6 +124,9 @@ trait ServiceHelper
      * @param ResetPasswordMailer $resetPasswordMailer
      * @param ApiTokenRepository $apiTokenRepo
      * @param SecurityMailer $securityMailer
+     * @param UploaderHelper $uploaderHelper
+     * @param ImageCacheGenerator $imageCacheGenerator
+     * @param CacheManager $cacheManager
      */
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -121,7 +142,10 @@ trait ServiceHelper
         UserPasswordEncoderInterface $passwordEncoder,
         ResetPasswordMailer $resetPasswordMailer,
         ApiTokenRepository $apiTokenRepo,
-        SecurityMailer $securityMailer
+        SecurityMailer $securityMailer,
+        UploaderHelper $uploaderHelper,
+        ImageCacheGenerator $imageCacheGenerator,
+        CacheManager $cacheManager
     ) {
         $this->entityManager = $entityManager;
         $this->assetsManager = $assetsManager;
@@ -137,6 +161,9 @@ trait ServiceHelper
         $this->resetPasswordMailer = $resetPasswordMailer;
         $this->apiTokenRepo = $apiTokenRepo;
         $this->securityMailer = $securityMailer;
+        $this->uploaderHelper = $uploaderHelper;
+        $this->imageCacheGenerator = $imageCacheGenerator;
+        $this->cacheManager = $cacheManager;
     }
 
     /**

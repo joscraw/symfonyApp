@@ -14,5 +14,12 @@
 
 
 {% block body %}
-    test
+    Welcome Controller
+
+    <form method="post" action="{{ path('image_add') }}" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <input type="submit">
+    </form>
+
+    <img src="{{ asset(uploaded_asset('clinic_logo/bench560435-5ddb5b02d2fa5.jpeg'))|imagine_filter('squared_thumbnail_small') }}" />
 {% endblock %}

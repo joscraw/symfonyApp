@@ -20,4 +20,16 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 class WelcomeController extends AbstractController
 {
 
+    /**
+     * @Route("/", name="welcome_index", methods={"GET", "POST"}, options = { "expose" = true })
+     * @param Request $request
+     * @return Response
+     * @throws \Exception
+     */
+    public function indexAction(Request $request) {
+        $user = $this->getUser();
+        return $this->render('welcome/index.html.twig', [
+            'user' => $user
+        ]);
+    }
 }

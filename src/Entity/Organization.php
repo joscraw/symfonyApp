@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Traits\Timestampable;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 
@@ -10,6 +11,8 @@ use Gedmo\Mapping\Annotation as Gedmo;
  */
 class Organization
 {
+    use Timestampable;
+
     /**
      * @Gedmo\Slug(fields={"siteUrl"}, updatable=false, separator="_")
      * @ORM\Id()
@@ -37,18 +40,6 @@ class Organization
      * @ORM\Column(type="string", length=255)
      */
     private $adminEmail;
-
-    /**
-     * @Gedmo\Timestampable(on="create")
-     * @ORM\Column(name="created", type="datetime")
-     */
-    private $created;
-
-    /**
-     * @ORM\Column(name="updated", type="datetime")
-     * @Gedmo\Timestampable(on="update")
-     */
-    private $updated;
 
     public function getId(): ?int
     {

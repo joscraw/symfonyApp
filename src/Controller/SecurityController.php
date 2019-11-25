@@ -37,17 +37,6 @@ class SecurityController extends AbstractController
     use ServiceHelper;
 
     /**
-     * @Route("/", name="welcome", methods={"GET", "POST"}, options = {"expose" = true })
-     * @param Request $request
-     * @return Response
-     */
-    public function welcome(Request $request): Response
-    {
-        // the homepage is just redirecting to an email check view
-        return $this->redirectToRoute('email_check');
-    }
-
-    /**
      * @Route("/sign-up", name="sign_up", methods={"GET", "POST"}, options = {"expose" = true })
      * @param Request $request
      * @param AuthenticationUtils $authenticationUtils
@@ -55,6 +44,9 @@ class SecurityController extends AbstractController
      * @param GuardAuthenticatorHandler $guardHandler
      * @param LoginFormAuthenticator $authenticator
      * @return Response
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      */
     public function signUp(Request $request, AuthenticationUtils $authenticationUtils, UserPasswordEncoderInterface $passwordEncoder, GuardAuthenticatorHandler $guardHandler, LoginFormAuthenticator $authenticator): Response
     {

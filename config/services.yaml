@@ -32,3 +32,17 @@ services:
     App\EventListener\RequestListener:
       tags:
         - { name: kernel.event_listener, event: kernel.request }
+
+    app.image_cache_generator:
+      alias: App\Service\ImageCacheGenerator
+      public: true
+
+    App\Service\ImageCacheGenerator:
+      arguments:
+        - "@liip_imagine.cache.manager"
+        - "@liip_imagine.data.manager"
+        - "@liip_imagine.filter.manager"
+        - "@liip_imagine.filter.configuration"
+        - "@logger"
+
+    Symfony\Component\Asset\Context\RequestStackContext: '@assets.context'

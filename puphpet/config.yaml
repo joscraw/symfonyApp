@@ -20,10 +20,10 @@ vagrantfile:
                         update_guest_tools: 0
                 machines:
                     machine1:
-                        id: ppn
-                        hostname: ppn.puphpet
+                        id: symfonyapp
+                        hostname: symfonyapp.puphpet
                         network:
-                            private_network: 192.168.56.111
+                            private_network: 192.168.56.190
                             forwarded_port:
                                 port1:
                                     host: '8659'
@@ -185,9 +185,9 @@ apache:
         - rewrite
     vhosts:
         vhost1:
-            servername: ppn.test
+            servername: symfonyapp.test
             serveraliases:
-                - www.ppn.test
+                - www.symfonyapp.test
             docroot: /var/www/public
             port: '80'
             setenvif:
@@ -340,20 +340,20 @@ mysql:
     install: '1'
     settings:
         version: '5.7'
-        root_password: ppn
+        root_password: symfonyapp
         override_options: {  }
     users:
         user1:
-            name: ppn
-            password: ppn
+            name: symfonyapp
+            password: symfonyapp
     databases:
         database1:
-            name: ppn
+            name: symfonyapp
             collate: utf8_general_ci
             sql: ''
     grants:
         grant1:
-            user: ppn
+            user: symfonyapp
             table: '*.*'
             privileges:
                 - ALL

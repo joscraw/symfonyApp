@@ -26,6 +26,7 @@
             depends="
                 database:drop,
                 database:update:schema,
+                database:normal:fixtures,
                 database:nelmio:fixtures,
                 webpack,
                 clean:cache:clear
@@ -44,6 +45,10 @@
 
     <target name="database:update:schema" description="Update database schema">
         <exec passthru="true" checkreturn="true" command="${dir.app}/console doctrine:schema:update --force"/>
+    </target>
+
+    <target name="database:normal:fixtures" description="Running fixtures">
+        <exec passthru="true" checkreturn="true" command="${dir.app}/console doctrine:fixtures:load --append"/>
     </target>
 
     <target name="database:nelmio:fixtures" description="Running fixtures">

@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Service\UploaderHelper;
+use App\Traits\Timestampable;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -24,6 +26,8 @@ use Gedmo\Mapping\Annotation as Gedmo;
  */
 class User implements UserInterface
 {
+    use Timestampable;
+
     const ROLE_USER = 'ROLE_USER';
     const ROLE_ADMIN_USER = 'ROLE_ADMIN_USER';
 
@@ -111,29 +115,9 @@ class User implements UserInterface
     protected $activated = false;
 
     /**
-     * @Gedmo\Timestampable(on="create")
-     * @ORM\Column(name="created", type="datetime")
-     */
-    private $created;
-
-    /**
-     * @ORM\Column(name="updated", type="datetime")
-     * @Gedmo\Timestampable(on="update")
-     */
-    private $updated;
-
-    /**
      * @ORM\OneToMany(targetEntity="App\Entity\ApiToken", mappedBy="user", orphanRemoval=true)
      */
     private $apiTokens;
-
-    /**
-     * This is different than the roles property as this doesn't actually affect authentication  or
-     * authorization throughout the app. This value is selected when a user signs up
-     *
-     * @ORM\Column(type="string", length=255)
-     */
-    private $role;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -346,38 +330,6 @@ class User implements UserInterface
     }
 
     /**
-     * @return mixed
-     */
-    public function getCreated()
-    {
-        return $this->created;
-    }
-
-    /**
-     * @param mixed $created
-     */
-    public function setCreated($created): void
-    {
-        $this->created = $created;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getUpdated()
-    {
-        return $this->updated;
-    }
-
-    /**
-     * @param mixed $updated
-     */
-    public function setUpdated($updated): void
-    {
-        $this->updated = $updated;
-    }
-
-    /**
      * @return Collection|ApiToken[]
      */
     public function getApiTokens(): Collection
@@ -404,18 +356,6 @@ class User implements UserInterface
                 $apiToken->setUser(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getRole(): ?string
-    {
-        return $this->role;
-    }
-
-    public function setRole(string $role): self
-    {
-        $this->role = $role;
 
         return $this;
     }
@@ -492,5 +432,10 @@ class User implements UserInterface
     public function setInvitationCode($invitationCode)
     {
         $this->invitationCode = $invitationCode;
+    }
+
+    public function getPhotoPath()
+    {
+        return UploaderHelper::CLINIC_LOGO.'/'.$this->getPhoto();
     }
 }

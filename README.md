@@ -25,8 +25,10 @@ clone this repo
     yarn dev
 
     ./bin/console doctrine:schema:update --force
+    
+    ./bin console doctrine:fixtures:load --append
 
-    ./bin/console hautelook:fixtures:load
+    ./bin/console hautelook:fixtures:load --append
 
 add the following to your /etc/hosts file
 
