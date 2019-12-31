@@ -1,0 +1,15 @@
+{{ form_start(form) }}
+<div>
+    {{ form_widget(form.firstName, {'attr': {'placeholder': 'First Name'}}) }}
+</div>
+<div>
+    {{ form_widget(form.lastName, {'attr': {'placeholder': 'Last Name'}}) }}
+</div>
+<div>
+    {{ form_widget(form.email, {'attr': {'placeholder': 'Email'}}) }}
+</div>
+<div>
+    <button>Search</button>
+    <a href="{{clearFormUrl }}">Clear</a>
+</div>
+{{ form_end(form) }}

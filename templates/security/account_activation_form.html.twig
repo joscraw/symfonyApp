@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Resend Account Activation Email{% endblock %}
+
+{% block body %}
+
+    <p>Before you can login you need to verify your account!</p>
+    <p>An account verification email has previously been sent to your account. Please check your inbox or click link below to resend email.</p>
+
+    <form method="post" action="{{ path('resend_account_activation', {'activationCode': user.activationCode}) }}">
+        <input type="submit" class="p-login__login-button" value="Resend"/>
+    </form>
+
+
+{% endblock %}

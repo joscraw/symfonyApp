@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Manage Users{% endblock %}
+
+{% block body %}
+    <div>
+        <div>Manage Users</div>
+        {% include 'admin/partials/_filters.html.twig' %}
+        <br>
+        <div>
+            Total Users: {{ pagination.getTotalItemCount }}
+        </div>
+
+        <table>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+            </tr>
+
+            {% for paginatedUser in pagination %}
+                <tr>
+                    <td>{{ paginatedUser.firstName }}</td>
+                    <td>{{ paginatedUser.lastName }}</td>
+                    <td>{{ paginatedUser.email }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        <div>
+            {{ knp_pagination_render(pagination) }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}

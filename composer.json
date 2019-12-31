@@ -8,6 +8,8 @@
         "ext-json": "*",
         "friendsofsymfony/jsrouting-bundle": "^2.3",
         "gedmo/doctrine-extensions": "^2.4",
+        "knplabs/knp-paginator-bundle": "^4.0",
+        "lexik/form-filter-bundle": "~5.0",
         "liip/imagine-bundle": "^2.2",
         "phing/phing": "^2.16",
         "rollerworks/password-strength-bundle": "^2.1",

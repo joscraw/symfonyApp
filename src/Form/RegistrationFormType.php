@@ -30,10 +30,7 @@ class RegistrationFormType extends AbstractType
         $builder
             ->add('firstName', TextType::class)
             ->add('lastName', TextType::class)
-            ->add('email', EmailType::class)
-            ->add('role', ChoiceType::class, [
-                'choices'  => User::$roleOptions,
-            ]);
+            ->add('email', EmailType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver)

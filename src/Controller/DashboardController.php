@@ -14,31 +14,21 @@ use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 /**
- * Class WelcomeController
+ * Class DashboardController
  * @package App\Controller
+ * @Route("/dashboard")
  */
-class WelcomeController extends AbstractController
+class DashboardController extends AbstractController
 {
-
     /**
-     * @Route("/", name="welcome")
+     * @Route("/", name="dashboard_index")
      * @param Request $request
      * @return Response
      */
-    public function welcome(Request $request): Response
+    public function index(Request $request): Response
     {
-        return $this->redirectToRoute('app_login');
-    }
-
-    /**
-     * @Route("/image-upload", name="welcome_index", methods={"GET", "POST"}, options = { "expose" = true })
-     * @param Request $request
-     * @return Response
-     * @throws \Exception
-     */
-    public function indexAction(Request $request) {
         $user = $this->getUser();
-        return $this->render('welcome/index.html.twig', [
+        return $this->render('dashboard/index.html.twig', [
             'user' => $user
         ]);
     }

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Form\ManageUserFilterType;
 use App\Repository\UserRepository;
 use App\Util\ServiceHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -33,12 +34,40 @@ class AdminController extends AbstractController
 
     /**
      * @IsGranted("ROLE_ADMIN_USER")
-     * @Route("/clinics", name="admin_clinics")
+     * @Route("/users", name="admin_users", options = { "expose" = true })
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
-     * @throws \Exception
      */
-    public function clinics(Request $request) {
-        return new Response("clinics");
+    public function users(Request $request) {
+        /** @var User $user */
+        $user = $this->getUser();
+        $form = $this->createForm(ManageUserFilterType::class, null, [
+            'action' => $this->generateUrl('admin_users'),
+            'method' => 'GET'
+        ]);
+
+        $form->handleRequest($request);
+
+        $filterBuilder = $this->userRepository->createQueryBuilder('u');
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // build the query from the given form object
+            $this->filterBuilder->addFilterConditions($form, $filterBuilder);
+        }
+
+        $filterQuery = $filterBuilder->getQuery();
+
+        $pagination = $this->paginator->paginate(
+            $filterQuery, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            10 /*limit per page*/
+        );
+
+        return $this->render('admin/manage_users.html.twig', [
+            'user' => $user,
+            'pagination' => $pagination,
+            'form' => $form->createView(),
+            'clearFormUrl' => $this->generateUrl('admin_users')
+        ]);
     }
 }

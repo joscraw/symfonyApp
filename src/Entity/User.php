@@ -70,17 +70,6 @@ class User implements UserInterface
     protected $plainPassword;
 
     /**
-     * InvitationCode
-     *
-     * The invitation code associated with a user.
-     *
-     * @var string
-     *
-     * @ORM\Column(name="invitation_code", type="string", length=255, nullable=true)
-     */
-    protected $invitationCode;
-
-    /**
      * @Assert\NotBlank(message="Don't forget a first name for your user!", groups={"INITIAL_REGISTRATION"})
      *
      * @ORM\Column(type="string", length=24)
@@ -403,39 +392,31 @@ class User implements UserInterface
         return $this;
     }
 
-    public function initializeNewUser($activationCode = true, $invitationCode = false)
+    public function initializeNewUser($activationCode = true)
     {
-        if($activationCode) {
-            $activationCode = bin2hex(random_bytes(32));
-            $this->setActivationCode($activationCode);
-        }
-
-        if($invitationCode) {
-            $invitationCode = bin2hex(random_bytes(32));
-            $this->setInvitationCode($invitationCode);
-        }
+        $activationCode = bin2hex(random_bytes(32));
+        $this->setActivationCode($activationCode);
 
         $this->roles[] = self::ROLE_USER;
     }
 
-    /**
-     * @return string
-     */
-    public function getInvitationCode()
-    {
-        return $this->invitationCode;
-    }
-
-    /**
-     * @param string $invitationCode
-     */
-    public function setInvitationCode($invitationCode)
-    {
-        $this->invitationCode = $invitationCode;
-    }
 
     public function getPhotoPath()
     {
         return UploaderHelper::CLINIC_LOGO.'/'.$this->getPhoto();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAdmin()
+    {
+        $roles = $this->getRoles();
+
+        if (in_array(self::ROLE_ADMIN_USER, $roles)) {
+            return true;
+        }
+
+        return false;
     }
 }

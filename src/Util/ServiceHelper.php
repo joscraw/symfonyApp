@@ -10,6 +10,8 @@ use App\Security\LoginFormAuthenticator;
 use App\Service\ImageCacheGenerator;
 use App\Service\UploaderHelper;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
+use Lexik\Bundle\FormFilterBundle\Filter\FilterBuilderUpdaterInterface;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Symfony\Component\Asset\Packages;
 use Symfony\Component\Form\FormInterface;
@@ -109,6 +111,16 @@ trait ServiceHelper
     private $cacheManager;
 
     /**
+     * @var FilterBuilderUpdaterInterface
+     */
+    private $filterBuilder;
+
+    /**
+     * @var PaginatorInterface
+     */
+    private $paginator;
+
+    /**
      * ServiceHelper constructor.
      * @param EntityManagerInterface $entityManager
      * @param Packages $assetsManager
@@ -127,6 +139,8 @@ trait ServiceHelper
      * @param UploaderHelper $uploaderHelper
      * @param ImageCacheGenerator $imageCacheGenerator
      * @param CacheManager $cacheManager
+     * @param FilterBuilderUpdaterInterface $filterBuilder
+     * @param PaginatorInterface $paginator
      */
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -145,7 +159,9 @@ trait ServiceHelper
         SecurityMailer $securityMailer,
         UploaderHelper $uploaderHelper,
         ImageCacheGenerator $imageCacheGenerator,
-        CacheManager $cacheManager
+        CacheManager $cacheManager,
+        FilterBuilderUpdaterInterface $filterBuilder,
+        PaginatorInterface $paginator
     ) {
         $this->entityManager = $entityManager;
         $this->assetsManager = $assetsManager;
@@ -164,6 +180,8 @@ trait ServiceHelper
         $this->uploaderHelper = $uploaderHelper;
         $this->imageCacheGenerator = $imageCacheGenerator;
         $this->cacheManager = $cacheManager;
+        $this->filterBuilder = $filterBuilder;
+        $this->paginator = $paginator;
     }
 
     /**

@@ -40,7 +40,7 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
 
     public function supports(Request $request)
     {
-        return 'welcome' === $request->attributes->get('_route')
+        return 'app_login' === $request->attributes->get('_route')
             && $request->isMethod('POST') && $request->request->get('formType') !== 'registrationForm';
 
     }
@@ -84,15 +84,19 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
     {
-        /*if ($targetPath = $this->getTargetPath($request->getSession(), $providerKey)) {
+        if ($targetPath = $this->getTargetPath($request->getSession(), $providerKey)) {
             return new RedirectResponse($targetPath);
-        }*/
+        }
 
-        $targetPath = $this->router->generate('organization_new');
+        /** @var User $user */
+        $user = $token->getUser();
+
+        if($user->isAdmin()) {
+            $targetPath = $this->router->generate('admin_users');
+        } else {
+            $targetPath = $this->router->generate('dashboard_index');
+        }
         return new RedirectResponse($targetPath);
-
-
-        // For example : return new RedirectResponse($this->router->generate('some_route'));
         throw new \Exception('TODO: provide a valid redirect inside '.__FILE__);
     }
 

@@ -50,30 +50,4 @@ class SecurityMailer extends AbstractMailer
             );
         $this->mailer->send($message);
     }
-
-    /**
-     * @param User $user
-     * @throws \Twig\Error\LoaderError
-     * @throws \Twig\Error\RuntimeError
-     * @throws \Twig\Error\SyntaxError
-     */
-    public function sendInvitation(User $user) {
-
-        $passwordSetUrl = $this->getFullyQualifiedBaseUrl().$this->router->generate(
-                'set_password',
-                array('token' => $user->getInvitationCode())
-            );
-
-        $message = (new \Swift_Message('Password Setup'))
-            ->setFrom($this->siteFromEmail)
-            ->setTo($user->getEmail())
-            ->setBody(
-                $this->templating->render(
-                    'email/passwordSetupEmail.html.twig',
-                    ['user' => $user, 'passwordSetUrl' => $passwordSetUrl]
-                ),
-                'text/html'
-            );
-        $this->mailer->send($message);
-    }
 }
