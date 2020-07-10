@@ -32,8 +32,8 @@ clone this repo
 
 add the following to your /etc/hosts file
 
-192.168.56.111 ppn.test
-192.168.56.111 www.ppn.test
+192.168.56.117 ibm-api-lead-integration.test
+192.168.56.117 www.ibm-api-lead-integration.test
 
 That's it!
 

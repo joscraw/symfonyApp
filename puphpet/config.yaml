@@ -20,10 +20,10 @@ vagrantfile:
                         update_guest_tools: 0
                 machines:
                     machine1:
-                        id: symfonyapp
-                        hostname: symfonyapp.puphpet
+                        id: ibm-api-lead-integration
+                        hostname: ibm-api-lead-integration.puphpet
                         network:
-                            private_network: 192.168.56.190
+                            private_network: 192.168.56.117
                             forwarded_port:
                                 port1:
                                     host: '8659'
@@ -185,9 +185,9 @@ apache:
         - rewrite
     vhosts:
         vhost1:
-            servername: symfonyapp.test
+            servername: ibm-api-lead-integration.test
             serveraliases:
-                - www.symfonyapp.test
+                - www.ibm-api-lead-integration.test
             docroot: /var/www/public
             port: '80'
             setenvif:
@@ -340,20 +340,20 @@ mysql:
     install: '1'
     settings:
         version: '5.7'
-        root_password: symfonyapp
+        root_password: root
         override_options: {  }
     users:
         user1:
-            name: symfonyapp
-            password: symfonyapp
+            name: ibm-api-lead-integration.test
+            password: ibm-api-lead-integration.test
     databases:
         database1:
-            name: symfonyapp
+            name: ibm-api-lead-integration.test
             collate: utf8_general_ci
             sql: ''
     grants:
         grant1:
-            user: symfonyapp
+            user: ibm-api-lead-integration.test
             table: '*.*'
             privileges:
                 - ALL
